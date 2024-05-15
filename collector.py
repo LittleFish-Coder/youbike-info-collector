@@ -94,30 +94,34 @@ if "__main__" == __name__:
             current_time = datetime.now(gmt8).strftime("%H:%M")
             print(f"Current time: {current_time}")
 
-            # get data from API
-            data = get_data()
+            try:
+                # get data from API
+                data = get_data()
 
-            # get the data returned time ("srcUpdateTime": "YYYY-MM-DD HH:MM:SS")
-            src_update_time = data[0]["srcUpdateTime"]
-            src_date, src_time = src_update_time.split(" ")
+                # get the data returned time ("srcUpdateTime": "YYYY-MM-DD HH:MM:SS")
+                src_update_time = data[0]["srcUpdateTime"]
+                src_date, src_time = src_update_time.split(" ")
 
-            # if the src_date is not equal to current_date, then break the loop
-            if src_date != current_date:
-                break
-            else:
-                HH, MM, SS = src_time.split(":")
-                time_str = f"{HH}:{MM}"
+                # if the src_date is not equal to current_date, then break the loop
+                if src_date != current_date:
+                    break
+                else:
+                    HH, MM, SS = src_time.split(":")
+                    time_str = f"{HH}:{MM}"
 
-            available_bikes = []  # current available bikes
-            for i in range(len(data)):
-                available_bikes.append(data[i]["available_rent_bikes"])
-            # update the df
-            df[f"{time_str} Available Rent Bikes"] = available_bikes
+                available_bikes = []  # current available bikes
+                for i in range(len(data)):
+                    available_bikes.append(data[i]["available_rent_bikes"])
+                # update the df
+                df[f"{time_str} Available Rent Bikes"] = available_bikes
 
-            # write data to csv
-            write_data(df, f"{destination_folder}/{current_date}.csv")
+                # write data to csv
+                write_data(df, f"{destination_folder}/{current_date}.csv")
 
-            time.sleep(time_sleep)
+                time.sleep(time_sleep)
+            except Exception as e:
+                print(f"Error: {e}")
+                continue
 
         # write data to csv
         print(f"Finish collecting data for {current_date}")
