@@ -6,11 +6,9 @@ import os
 import pytz
 
 api_url = "https://tcgbusfs.blob.core.windows.net/dotapp/youbike/v2/youbike_immediate.json"
-time_interval = 30  # 30 minutes
-time_sleep = 30 * 60  # 30 minutes
-candidate_time = [f"{hour:02d}:{minute:02d}" for hour in range(0, 24) for minute in range(0, 60, time_interval)]
+time_sleep = 30  # 30 seconds
 destination_folder = "result"
-template_csv = "src/template.csv"
+template_csv = "result/template.csv"
 # create a timezone object for GMT+8
 gmt8 = pytz.timezone("Asia/Taipei")
 
@@ -43,19 +41,13 @@ def generate_template(time_str: str):
     #     longitude.append(data[i]["longitude"])
     #     total.append(data[i]["total"])
 
-    # available_rent_bikes_names = [f"{str(hh).zfill(2)}:{str(mm).zfill(2)} Available Rent Bikes" for hh in range(0, 24) for mm in range(0, 60, time_interval)]
-
-    # # |Station|Station Number|Station Area|Area|Latitude|Longitude|Total|hh:mm Available Rent Bikes|...|
+    # # |Station|Station Number|Station Area|Area|Latitude|Longitude|Total|
     # column_headers = ["Station", "Station Number", "Station Area", "Area", "Latitude", "Longitude", "Total"]
 
     # df = pd.DataFrame(
     #     list(zip(station_name, station_number, station_area, area, latitude, longitude, total)),
     #     columns=column_headers,
     # )
-
-    # # add columns for available rent bikes
-    # for name in available_rent_bikes_names:
-    #     df[name] = 0
 
     # # write data to csv
     # write_data(df, f"result/{time_str}.csv")
@@ -81,11 +73,9 @@ if "__main__" == __name__:
     """
 
     print("Start collecting data...")
-    print(f"Time interval: {time_interval} minutes")
 
     while True:
         # get current date
-        # current_date = time.strftime("%Y-%m-%d", time.localtime())
         current_date = datetime.now(gmt8).strftime("%Y-%m-%d")
         print(f"Current date: {current_date}")
 
@@ -97,42 +87,36 @@ if "__main__" == __name__:
         # get the df
         df = pd.read_csv(f"{destination_folder}/{current_date}.csv")
 
-        # get current time
-        # current_time = time.strftime("%H:%M", time.localtime())
-        current_time = datetime.now(gmt8).strftime("%H:%M")
-        print(f"Current time: {current_time}")
-        rest_time = candidate_time.copy()
-        for time_str in candidate_time:
-            # compare the current time with the candidate time
-            if current_time > time_str:
-                # print(f"current_time: {current_time} > time_str:{time_str}")
-                print(f"Remove {time_str}")
-                rest_time.remove(time_str)
-        # print(f"Rest time: {rest_time}")
+        # keep requesting data from api until 23:59
+        # if the current time is 23:59, then start the next day
+        while True:
+            # get current time
+            current_time = datetime.now(gmt8).strftime("%H:%M")
+            print(f"Current time: {current_time}")
 
-        # sleep until the next candidate time
-        print(f"Sleep until: {rest_time[0]}")
-        # parse the time
-        current_time = datetime.strptime(current_time, "%H:%M")
-        target_time = datetime.strptime(rest_time[0], "%H:%M")
-        # subtract the time
-        sleep_time = target_time - current_time
-        sleep_time = sleep_time.total_seconds()
-        print(f"Sleep time: {sleep_time}")
-
-        # sleep
-        time.sleep(sleep_time)
-
-        # request data from api for every 30 minutes
-        for time_str in rest_time:
-            print(f"Current time: {time_str}")
+            # get data from API
             data = get_data()
-            available_bikes = []  # 目前車輛數量
+
+            # get the data returned time ("srcUpdateTime": "YYYY-MM-DD HH:MM:SS")
+            src_update_time = data[0]["srcUpdateTime"]
+            src_date, src_time = src_update_time.split(" ")
+
+            # if the src_date is not equal to current_date, then break the loop
+            if src_date != current_date:
+                break
+            else:
+                HH, MM, SS = src_time.split(":")
+                time_str = f"{HH}:{MM}"
+
+            available_bikes = []  # current available bikes
             for i in range(len(data)):
                 available_bikes.append(data[i]["available_rent_bikes"])
-            print(available_bikes)
             # update the df
             df[f"{time_str} Available Rent Bikes"] = available_bikes
+
+            # write data to csv
+            write_data(df, f"{destination_folder}/{current_date}.csv")
+
             time.sleep(time_sleep)
 
         # write data to csv
@@ -140,5 +124,3 @@ if "__main__" == __name__:
         print(f"Write data to {destination_folder}/{current_date}.csv")
         write_data(df, f"{destination_folder}/{current_date}.csv")
         print()
-        # Sleep for 30 minutes...
-        time.sleep(time_sleep)
