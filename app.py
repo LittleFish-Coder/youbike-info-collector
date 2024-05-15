@@ -71,7 +71,9 @@ if seletecd_time_interval:
             # we need to filter the data to match the selected time interval
 
             attributes = df.columns[:7].to_list()
-            attributes.extend(candidate_time)
+            for attr in df.columns[7:]:
+                if attr in candidate_time:
+                    attributes.append(attr)
             df = df[attributes]
 
             # convert the data to csv
