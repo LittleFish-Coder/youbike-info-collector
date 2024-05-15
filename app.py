@@ -1,11 +1,8 @@
 import streamlit as st
-import requests
 import pandas as pd
-import time
 from datetime import datetime
 from PIL import Image
 import os
-import pytz
 
 # icon
 icon = Image.open("src/favicon.ico")
