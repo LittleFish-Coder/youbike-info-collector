@@ -1,2 +1,4 @@
 pandas
 pytz
+Pillow
+streamlit
