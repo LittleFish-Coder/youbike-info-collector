@@ -26,6 +26,8 @@ def convert_df(df):
 date_list = os.listdir("result")
 date_list.sort()
 date_list = [date.replace(".csv", "") for date in date_list]
+date_list.remove("template")
+date_list.insert(0, "template")  # make the template as the first option
 
 # selectbox for existing dates
 selected_date = st.selectbox(
