@@ -23,7 +23,7 @@ def convert_df(df):
     return df.to_csv(index=False).encode("utf-8-sig")
 
 
-date_list = os.listdir("result")
+date_list = os.listdir("result").sort()
 date_list = [date.replace(".csv", "") for date in date_list]
 
 # selectbox for existing dates
