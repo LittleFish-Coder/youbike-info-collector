@@ -15,7 +15,7 @@ st.set_page_config(
 )
 
 # Title
-st.title("YouBike Collector")
+st.title("YouBike Info Collector")
 
 
 @st.cache_data
@@ -28,6 +28,15 @@ date_list.sort()
 date_list = [date.replace(".csv", "") for date in date_list]
 date_list.remove("template")
 date_list.insert(0, "template")  # make the template as the first option
+
+expander = st.expander("說明")
+with expander:
+    st.write("- GitHub: https://github.com/LittleFish-Coder/youbike-info-collector")
+    st.write("- 本專案為台北市YouBike即時資訊服務，此服務可以收集指定日期的YouBike站點即時資訊")
+    st.markdown(
+        "- 資料來源: [台北市資料大平台](https://data.taipei/dataset/detail?id=c6bc8aed-557d-41d5-bfb1-8da24f78f2fb&fbclid=IwZXh0bgNhZW0CMTAAAR0OHkwnVjiA6gp1TcKB3eOaRkE2Y_muk2TE4K8O9ntiiXeoRrRMbjGzFZY_aem_AYJnjcnXubcbUCy272pvoA95ZEArrcGdDEw4RSXbbknOtsib5f9pyWJ_PDPi610nsfHXH7wkvGDE1TgEu1FAbH1w)"
+    )
+
 
 # selectbox for existing dates
 selected_date = st.selectbox(
