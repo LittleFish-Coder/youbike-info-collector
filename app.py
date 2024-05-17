@@ -25,11 +25,13 @@ def convert_df(df):
 
 def rent_to_return(df):
     df = df.copy()
+    colums_to_drop = []
     for i in range(7, len(df.columns)):
         if "Available Rent Bikes" in df.columns[i]:
             diff = df["Total"] - df[df.columns[i]]
             df[df.columns[i].replace("Available Rent Bikes", "Available Return Bikes")] = diff
-            df = df.drop(columns=[df.columns[i]])
+            colums_to_drop.append(df.columns[i])
+    df = df.drop(columns=colums_to_drop)
     return df
 
 
