@@ -23,6 +23,15 @@ def convert_df(df):
     return df.to_csv(index=False).encode("utf-8-sig")
 
 
+def rent_to_return(df):
+    df = df.copy()
+    for i in range(7, len(df.columns)):
+        if "Available Rent Bikes" in df.columns[i]:
+            diff = df["Total"] - df[df.columns[i]]
+            df[df.columns[i].replace("Available Rent Bikes", "Available Return Bikes")] = diff
+    return df
+
+
 date_list = os.listdir("result")
 date_list.sort()
 date_list = [date.replace(".csv", "") for date in date_list]
@@ -49,6 +58,13 @@ selected_date = st.selectbox(
 seletecd_time_interval = st.selectbox(
     "Select a time interval",
     ["1 min", "5 min", "15 min", "30 min", "60 min"],
+    index=0,
+)
+
+# selectbox for showing available rent/return bikes
+selected_bike = st.selectbox(
+    "Select a bike type",
+    ["Available Rent Bikes", "Available Return Bikes"],
     index=0,
 )
 
@@ -84,6 +100,10 @@ if seletecd_time_interval:
                 if attr in candidate_time:
                     attributes.append(attr)
             df = df[attributes]
+
+            # if user choose to show available return bikes
+            if selected_bike == "Available Return Bikes":
+                df = rent_to_return(df)
 
             # convert the data to csv
             csv = convert_df(df)
