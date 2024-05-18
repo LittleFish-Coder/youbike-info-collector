@@ -118,3 +118,7 @@ if seletecd_time_interval:
                 "text/csv",
                 key="download-csv",
             )
+
+# map
+df_map = pd.read_csv("result/template.csv")
+st.map(df_map[["Latitude", "Longitude"]])
