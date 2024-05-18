@@ -137,7 +137,7 @@ map = folium.Map(location=[25.0330, 121.5654], zoom_start=12)
 for i in range(len(df_map)):
     folium.Marker(
         [df_map["latitude"][i], df_map["longitude"][i]],
-        popup=f"{df_map["available_rent_bikes"][i]}/{df_map["total"][i]}",
+        popup=f"{df_map['available_rent_bikes'][i]}/{df_map['total'][i]}",
         tooltip=df_map["sna"][i].replace("YouBike2.0_", ""),
     ).add_to(map)
 # render the map
