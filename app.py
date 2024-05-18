@@ -1,13 +1,14 @@
+import os
 import streamlit as st
 import pandas as pd
 from datetime import datetime
 from PIL import Image
-import os
-import folium
-from streamlit_folium import folium_static
 import requests
 import io
 import json
+import time
+import folium
+from streamlit_folium import folium_static
 
 # icon
 icon = Image.open("src/favicon.ico")
@@ -132,18 +133,33 @@ def get_data():
 
 
 # map
-data = get_data()  # return json data
-# save to buffer
-buffer = io.StringIO()
-json.dump(data, buffer)
-# get data from json
-df_map = pd.read_json(data)
-map = folium.Map(location=[25.0330, 121.5654], zoom_start=12)
-for i in range(len(df_map)):
-    folium.Marker(
-        [df_map["latitude"][i], df_map["longitude"][i]],
-        popup=f"{df_map['available_rent_bikes'][i]}/{df_map['total'][i]}",
-        tooltip=df_map["sna"][i].replace("YouBike2.0_", ""),
-    ).add_to(map)
-# render the map
-folium_static(map)
+st.markdown("# 即時YouBike站點資訊")
+update_interval = 5 * 60  # update every 5 minutes
+text_container = st.empty()
+while True:
+    data = None
+    while data is None:
+        st.spinner("Fetching data...")
+        data = get_data()  # return json data
+    src_update_time = data[0]["srcUpdateTime"]
+    text_container.write(f"顯示每站的可租借/總數量 (更新時間: {src_update_time})")
+    # save to buffer
+    buffer = io.StringIO()
+    json.dump(data, buffer)
+    # get data from json
+    df_map = pd.read_json(buffer.getvalue())
+    map_container = st.empty()
+    with map_container:
+        map = folium.Map(location=[25.0330, 121.5654], zoom_start=12)
+        for i in range(len(df_map)):
+            folium.Marker(
+                [df_map["latitude"][i], df_map["longitude"][i]],
+                popup=f"{df_map['available_rent_bikes'][i]}/{df_map['total'][i]}",
+                tooltip=df_map["sna"][i].replace("YouBike2.0_", ""),
+                icon=folium.Icon(color="blue", icon="bicycle", prefix="fa"),
+            ).add_to(map)
+        # render the map
+        folium_static(map)
+        # update every 5 minutes
+        time.sleep(update_interval)
+        map_container.empty()
