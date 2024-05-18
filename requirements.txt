@@ -2,3 +2,4 @@ pandas
 pytz
 Pillow
 streamlit
+folium
