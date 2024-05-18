@@ -3,3 +3,4 @@ pytz
 Pillow
 streamlit
 folium
+streamlit_folium
