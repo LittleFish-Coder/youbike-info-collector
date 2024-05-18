@@ -3,6 +3,8 @@ import pandas as pd
 from datetime import datetime
 from PIL import Image
 import os
+import folium
+from streamlit_folium import folium_static
 
 # icon
 icon = Image.open("src/favicon.ico")
@@ -121,4 +123,8 @@ if seletecd_time_interval:
 
 # map
 df_map = pd.read_csv("result/template.csv")
-st.map(df_map[["Latitude", "Longitude", "Station"]], latitude="Latitude", longitude="Longitude")
+map = folium.Map(location=[25.0330, 121.5654], zoom_start=12)
+for i in range(len(df_map)):
+    folium.Marker([df_map["Latitude"][i], df_map["Longitude"][i]], popup=df_map["Station"][i]).add_to(map)
+# render the map
+folium_static(map)
