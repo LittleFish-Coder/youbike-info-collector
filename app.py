@@ -5,6 +5,7 @@ from PIL import Image
 import os
 import folium
 from streamlit_folium import folium_static
+import requests
 
 # icon
 icon = Image.open("src/favicon.ico")
@@ -121,10 +122,23 @@ if seletecd_time_interval:
                 key="download-csv",
             )
 
+
+def get_data():
+    api_url = "https://tcgbusfs.blob.core.windows.net/dotapp/youbike/v2/youbike_immediate.json"
+    response = requests.get(api_url)
+    return response.json()
+
+
 # map
-df_map = pd.read_csv("result/template.csv")
+data = get_data()  # return json data
+# get data from json
+df_map = pd.read_json(data)
 map = folium.Map(location=[25.0330, 121.5654], zoom_start=12)
 for i in range(len(df_map)):
-    folium.Marker([df_map["Latitude"][i], df_map["Longitude"][i]], popup=df_map["Station"][i]).add_to(map)
+    folium.Marker(
+        [df_map["latitude"][i], df_map["longitude"][i]],
+        popup=f"{df_map["available_rent_bikes"][i]}/{df_map["total"][i]}",
+        tooltip=df_map["sna"][i].replace("YouBike2.0_", ""),
+    ).add_to(map)
 # render the map
 folium_static(map)
