@@ -50,7 +50,7 @@ date_list.insert(0, "template")  # make the template as the first option
 expander = st.expander("說明")
 with expander:
     st.write("- GitHub: https://github.com/LittleFish-Coder/youbike-info-collector")
-    st.write("- 此服務提供台北市YouBike站點指定日期的租還車數量資訊")
+    st.write("- 此服務提供台北市YouBike各站點指定日期的租還車數量資訊")
     st.markdown(
         "- 資料來源: [台北市資料大平台](https://data.taipei/dataset/detail?id=c6bc8aed-557d-41d5-bfb1-8da24f78f2fb&fbclid=IwZXh0bgNhZW0CMTAAAR0OHkwnVjiA6gp1TcKB3eOaRkE2Y_muk2TE4K8O9ntiiXeoRrRMbjGzFZY_aem_AYJnjcnXubcbUCy272pvoA95ZEArrcGdDEw4RSXbbknOtsib5f9pyWJ_PDPi610nsfHXH7wkvGDE1TgEu1FAbH1w)"
     )
