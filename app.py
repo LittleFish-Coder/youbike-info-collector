@@ -121,4 +121,4 @@ if seletecd_time_interval:
 
 # map
 df_map = pd.read_csv("result/template.csv")
-st.map(df_map[["Latitude", "Longitude"]])
+st.map(df_map[["Latitude", "Longitude", "Station"]], latitude="Latitude", longitude="Longitude")
