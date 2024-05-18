@@ -6,6 +6,8 @@ import os
 import folium
 from streamlit_folium import folium_static
 import requests
+import io
+import json
 
 # icon
 icon = Image.open("src/favicon.ico")
@@ -131,6 +133,9 @@ def get_data():
 
 # map
 data = get_data()  # return json data
+# save to buffer
+buffer = io.StringIO()
+json.dump(data, buffer)
 # get data from json
 df_map = pd.read_json(data)
 map = folium.Map(location=[25.0330, 121.5654], zoom_start=12)
