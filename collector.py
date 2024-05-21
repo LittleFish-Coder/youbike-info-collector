@@ -8,7 +8,6 @@ import pytz
 api_url = "https://tcgbusfs.blob.core.windows.net/dotapp/youbike/v2/youbike_immediate.json"
 time_sleep = 30  # 30 seconds
 destination_folder = "result"
-template_csv = "result/template.csv"
 # create a timezone object for GMT+8
 gmt8 = pytz.timezone("Asia/Taipei")
 
@@ -18,39 +17,34 @@ def generate_template(time_str: str):
     if not os.path.exists(destination_folder):
         os.makedirs(destination_folder)
 
-    # read template
-    df = pd.read_csv(template_csv)
+    data = get_data()
+    station_name = []  # 站名
+    station_number = []  # 站點編號
+    station_area = []  # 站點區域
+    area = []  # 站點行政區
+    latitude = []  # 緯度
+    longitude = []  # 經度
+    total = []  # 總停車格
+
+    for i in range(len(data)):
+        station_name.append(data[i]["sna"].replace("YouBike2.0_", ""))
+        station_number.append(data[i]["sno"])
+        station_area.append(data[i]["sarea"])
+        area.append(data[i]["ar"])
+        latitude.append(data[i]["latitude"])
+        longitude.append(data[i]["longitude"])
+        total.append(data[i]["total"])
+
+    # |Station|Station Number|Station Area|Area|Latitude|Longitude|Total|
+    column_headers = ["Station", "Station Number", "Station Area", "Area", "Latitude", "Longitude", "Total"]
+
+    df = pd.DataFrame(
+        list(zip(station_name, station_number, station_area, area, latitude, longitude, total)),
+        columns=column_headers,
+    )
+
     # write data to csv
-    write_data(df, f"{destination_folder}/{time_str}.csv")
-
-    # data = get_data()
-    # station_name = []  # 站名
-    # station_number = []  # 站點編號
-    # station_area = []  # 站點區域
-    # area = []  # 站點行政區
-    # latitude = []  # 緯度
-    # longitude = []  # 經度
-    # total = []  # 總停車格
-
-    # for i in range(len(data)):
-    #     station_name.append(data[i]["sna"].replace("YouBike2.0_", ""))
-    #     station_number.append(data[i]["sno"])
-    #     station_area.append(data[i]["sarea"])
-    #     area.append(data[i]["ar"])
-    #     latitude.append(data[i]["latitude"])
-    #     longitude.append(data[i]["longitude"])
-    #     total.append(data[i]["total"])
-
-    # # |Station|Station Number|Station Area|Area|Latitude|Longitude|Total|
-    # column_headers = ["Station", "Station Number", "Station Area", "Area", "Latitude", "Longitude", "Total"]
-
-    # df = pd.DataFrame(
-    #     list(zip(station_name, station_number, station_area, area, latitude, longitude, total)),
-    #     columns=column_headers,
-    # )
-
-    # # write data to csv
-    # write_data(df, f"result/{time_str}.csv")
+    write_data(df, f"result/{time_str}.csv")
 
 
 def get_data():
