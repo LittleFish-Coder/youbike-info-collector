@@ -76,12 +76,9 @@ selected_bike = st.selectbox(
     index=0,
 )
 
-# read data
-if selected_date:
-    df = pd.read_csv(f"result/{selected_date}.csv")
-
 # download button
-if seletecd_time_interval:
+if selected_date and seletecd_time_interval:
+    df = pd.read_csv(f"result/{selected_date}.csv")
     time_interval = int(seletecd_time_interval.split(" ")[0])
     if time_interval == 1:
         # prepare the data
