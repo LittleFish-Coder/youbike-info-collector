@@ -79,25 +79,32 @@ selected_bike = st.selectbox(
 # read data
 if selected_date:
     df = pd.read_csv(f"result/{selected_date}.csv")
-    st.dataframe(df)
 
 # download button
 if seletecd_time_interval:
     time_interval = int(seletecd_time_interval.split(" ")[0])
     if time_interval == 1:
-        # convert the data to csv
-        csv = convert_df(df)
-        st.download_button(
-            "Press to Download",
-            csv,
-            f"{selected_date}.csv",
-            "text/csv",
-            key="download-csv",
-        )
+        # prepare the data
+        with st.spinner("Wait for it..."):
+            # if user choose to show available return bikes
+            if selected_bike == "Available Return Bikes":
+                df = rent_to_return(df)
+
+            # show the dataframe
+            st.dataframe(df)
+
+            # convert the data to csv
+            csv = convert_df(df)
+            st.download_button(
+                "Press to Download",
+                csv,
+                f"{selected_date}.csv",
+                "text/csv",
+                key="download-csv",
+            )
     else:
         # prepare the data
         with st.spinner("Wait for it..."):
-            df = pd.read_csv(f"result/{selected_date}.csv")
             candidate_time = [f"{hour:02d}:{minute:02d} Available Rent Bikes" for hour in range(0, 24) for minute in range(0, 60, time_interval)]
 
             # the original data will contain the time in the format of "hh:mm" and with the interval of 1 minute
@@ -112,6 +119,9 @@ if seletecd_time_interval:
             # if user choose to show available return bikes
             if selected_bike == "Available Return Bikes":
                 df = rent_to_return(df)
+
+            # show the dataframe
+            st.dataframe(df)
 
             # convert the data to csv
             csv = convert_df(df)
