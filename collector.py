@@ -104,10 +104,21 @@ if "__main__" == __name__:
                     time_str = f"{HH}:{MM}"
 
                 available_bikes = []  # current available bikes
+                station_names = []  # station names
                 for i in range(len(data)):
+                    station_names.append(data[i]["sna"].replace("YouBike2.0_", ""))
                     available_bikes.append(data[i]["available_rent_bikes"])
-                # update the df
-                df[f"{time_str} Available Rent Bikes"] = available_bikes
+
+                # create a new DataFrame with the available bikes
+                new_df = pd.DataFrame(
+                    {
+                        "Station": station_names,
+                        f"{time_str} Available Rent Bikes": available_bikes,
+                    }
+                )
+
+                # merge the new_df with the original df and drop the duplicated columns
+                df = pd.merge(df, new_df, on="Station", how="left")
 
                 # write data to csv
                 write_data(df, f"{destination_folder}/{current_date}.csv")
