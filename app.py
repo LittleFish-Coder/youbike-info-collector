@@ -53,6 +53,7 @@ with expander:
     st.markdown(
         "- 資料來源: [台北市資料大平台](https://data.taipei/dataset/detail?id=c6bc8aed-557d-41d5-bfb1-8da24f78f2fb&fbclid=IwZXh0bgNhZW0CMTAAAR0OHkwnVjiA6gp1TcKB3eOaRkE2Y_muk2TE4K8O9ntiiXeoRrRMbjGzFZY_aem_AYJnjcnXubcbUCy272pvoA95ZEArrcGdDEw4RSXbbknOtsib5f9pyWJ_PDPi610nsfHXH7wkvGDE1TgEu1FAbH1w)"
     )
+    st.write("目前5/16, 18, 21 資料有缺失，請選擇其他日期")
 
 
 # selectbox for existing dates
