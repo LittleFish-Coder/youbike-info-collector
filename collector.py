@@ -120,11 +120,15 @@ if "__main__" == __name__:
                 # merge the new_df with the original df and drop the duplicated columns
                 merged_df = pd.merge(df, new_df, on="Station", how="left", suffixes=("", "_new"))
 
-                # update 'Attr' with values from 'Attr_new' where available
-                merged_df[f"{time_str} Available Rent Bikes"] = merged_df[f"{time_str} Available Rent Bikes_new"].combine_first(merged_df[f"{time_str} Available Rent Bikes"])
+                try:
+                    # update 'Attr' with values from 'Attr_new' where available
+                    merged_df[f"{time_str} Available Rent Bikes"] = merged_df[f"{time_str} Available Rent Bikes_new"].combine_first(merged_df[f"{time_str} Available Rent Bikes"])
 
-                # drop the duplicated columns
-                merged_df = merged_df.drop(columns=[f"{time_str} Available Rent Bikes_new"])
+                    # drop the duplicated columns
+                    merged_df = merged_df.drop(columns=[f"{time_str} Available Rent Bikes_new"])
+                except KeyError:
+                    print(f"Current no _new column for {time_str}")
+                    pass
 
                 df = merged_df.copy()
 
