@@ -118,7 +118,15 @@ if "__main__" == __name__:
                 )
 
                 # merge the new_df with the original df and drop the duplicated columns
-                df = pd.merge(df, new_df, on="Station", how="left")
+                merged_df = pd.merge(df, new_df, on="Station", how="left", suffixes=("", "_new"))
+
+                # update 'Attr' with values from 'Attr_new' where available
+                merged_df[f"{time_str} Available Rent Bikes"] = merged_df[f"{time_str} Available Rent Bikes_new"].combine_first(merged_df[f"{time_str} Available Rent Bikes"])
+
+                # drop the duplicated columns
+                merged_df = merged_df.drop(columns=[f"{time_str} Available Rent Bikes_new"])
+
+                df = merged_df.copy()
 
                 # write data to csv
                 write_data(df, f"{destination_folder}/{current_date}.csv")
